@@ -13,9 +13,9 @@ public:
 	inline SDL_Window* get_window() { return window; }
 private:
 	bool running = true;
-	SDL_Window* window;
+	SDL_Window* window = nullptr;
 
-	Renderer renderer_inst;
+	Renderer renderer_inst{};
 
 	bool poll_events();
 };

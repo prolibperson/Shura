@@ -1,5 +1,4 @@
 #include "Renderer.h"
-#include "Vertex.h"
 
 bool Renderer::create_device()
 {
@@ -15,18 +14,6 @@ bool Renderer::create_command_buffer()
 {
 	command_buffer = SDL_AcquireGPUCommandBuffer(device);
 	if (command_buffer == NULL)
-	{
-		return false;
-	}
-	return true;
-}
-
-bool Renderer::create_vertex_buffer()
-{
-	buffer_info.size = sizeof(vertices);
-	buffer_info.usage = SDL_GPU_BUFFERUSAGE_VERTEX;
-	vertex_buffer = SDL_CreateGPUBuffer(device, &buffer_info);
-	if (vertex_buffer == NULL)
 	{
 		return false;
 	}
@@ -54,12 +41,29 @@ bool Renderer::init(SDL_Window* window)
 	Log("Command buffer created");
 
 	/* make vertex buffer */
-	if (!create_vertex_buffer())
+	if (!mesh_inst.create_vertex_buffer(device))
 	{
 		LogError("Failed to create vertex buffer");
 		return false;
 	}
 	Log("Vertex buffer created");
+
+	/* make transfer buffer */
+	if (!mesh_inst.create_transfer_buffer(device))
+	{
+		LogError("Failed to create transfer buffer");
+		return false;
+	}
+	Log("Transfer buffer created");
+
+	/* triangle mesh */
+	/* TODO: error checking cuz nothing returns false in the func ;-; */
+	if (!mesh_inst.make_triangle(device))
+	{
+		LogError("Failed to create triangle mesh");
+		return false;
+	}
+	Log("Triangle mesh created");
 
 	return true;
 }
@@ -88,6 +92,10 @@ void Renderer::begin_frame()
 
 	/* start rend pass */
 	render_pass = SDL_BeginGPURenderPass(command_buffer, &color_target_info, 1, NULL);
+}
+
+void Renderer::draw(Mesh& mesh, Shader& shader)
+{
 }
 
 void Renderer::end_frame()

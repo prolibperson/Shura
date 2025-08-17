@@ -52,7 +52,11 @@ void Engine::run()
 void Engine::shutdown()
 {
     Log("Shutdown triggered");
-    SDL_ReleaseGPUBuffer(renderer_inst.get_device(), renderer_inst.get_vertex_buffer());
+
+    /* yes i made this with a migraine, how did you know? */
+    SDL_ReleaseGPUBuffer(renderer_inst.get_device(), renderer_inst.mesh_inst.get_vertex_buffer());
+    SDL_ReleaseGPUTransferBuffer(renderer_inst.get_device(), renderer_inst.mesh_inst.get_transfer_buffer());
+
     SDL_DestroyGPUDevice(renderer_inst.get_device());
     SDL_DestroyWindow(window);
 }

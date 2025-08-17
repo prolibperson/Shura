@@ -75,7 +75,7 @@
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
-      <Filter>Graphics\Shader</Filter>
+      <Filter>Graphics\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,15 +1,19 @@
 #pragma once
 #include "Globals.h"
+#include "Mesh.h"
+#include "Shader.h"
 
 class Renderer
 {
 public:
 	bool init(SDL_Window* window);
 	void begin_frame();
+	void draw(Mesh& mesh, Shader& shader);
 	void end_frame();
 
+	Mesh mesh_inst{};
+
 	inline SDL_GPUDevice* get_device() { return device; }
-	inline SDL_GPUBuffer* get_vertex_buffer() { return vertex_buffer; }
 
 private:
 	SDL_GPUDevice* device = nullptr;
@@ -17,12 +21,12 @@ private:
 	SDL_GPUTexture* swapchain_texture = nullptr;
 	SDL_GPURenderPass* render_pass = nullptr;
 	SDL_Window* rend_window = nullptr;
-	SDL_GPUBuffer* vertex_buffer = nullptr;
+
 	SDL_GPUColorTargetInfo color_target_info{};
-	SDL_GPUBufferCreateInfo buffer_info{};
+
+	//Mesh mesh_inst{};
 
 	bool create_device();
 	bool create_command_buffer();
-	bool create_vertex_buffer();
 };
 
