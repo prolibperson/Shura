@@ -64,7 +64,7 @@ bool Renderer::init(SDL_Window* window)
 	return true;
 }
 
-bool Renderer::begin_frame()
+void Renderer::begin_frame()
 {
 	/* get command buff */
 	command_buffer = SDL_AcquireGPUCommandBuffer(device);
@@ -77,7 +77,7 @@ bool Renderer::begin_frame()
 	if (swapchain_texture == NULL)
 	{
 		SDL_SubmitGPUCommandBuffer(command_buffer);
-		return true;
+		return;
 	}
 
 	/* color target */
@@ -88,17 +88,13 @@ bool Renderer::begin_frame()
 
 	/* start rend pass */
 	render_pass = SDL_BeginGPURenderPass(command_buffer, &color_target_info, 1, NULL);
-
-	return true;
 }
 
-bool Renderer::end_frame()
+void Renderer::end_frame()
 {
 	/* end rend pass */
 	SDL_EndGPURenderPass(render_pass);
 
 	/* submit to command buff*/
 	SDL_SubmitGPUCommandBuffer(command_buffer);
-
-	return true;
 }
