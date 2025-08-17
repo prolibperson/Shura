@@ -5,8 +5,8 @@ class Renderer
 {
 public:
 	bool init(SDL_Window* window);
-	bool begin_frame();
-	bool end_frame();
+	void begin_frame();
+	void end_frame();
 
 	inline SDL_GPUDevice* get_device() { return device; }
 	inline SDL_GPUBuffer* get_vertex_buffer() { return vertex_buffer; }
