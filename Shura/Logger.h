@@ -47,50 +47,47 @@ namespace Logger {
     }
 #endif
 
-    template<typename... Args>
-    void Log(const std::string& format_str, Args&&... args) {
-        std::string message = std::vformat(format_str, std::make_format_args(args...));
-
-#ifdef _WIN32
-        SetConsoleColor(InfoColor);
-        std::cout << "[" << CurrentTime() << "] [INFO]  ";
-        SetConsoleColor(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); // reset
-        std::cout << message << "\n";
-#else
-        std::cout << CYAN << "[" << CurrentTime() << "] [INFO]  " << RESET << message << "\n";
-#endif
+    inline const char* BaseFileName(const char* path) {
+        const char* file = path;
+        for (const char* p = path; *p; ++p) {
+            if (*p == '/' || *p == '\\') file = p + 1;
+        }
+        return file;
     }
 
     template<typename... Args>
-    void LogWarn(const std::string& format_str, Args&&... args) {
+    void LogInternal(const char* file, const char* function, int line,
+        const std::string& level, const std::string& color,
+        const std::string& format_str, Args&&... args)
+    {
         std::string message = std::vformat(format_str, std::make_format_args(args...));
 
 #ifdef _WIN32
-        SetConsoleColor(WarnColor);
-        std::cout << "[" << CurrentTime() << "] [WARN] ";
-        SetConsoleColor(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); // reset
-        std::cout << message << "\n";
-#else
-        std::cout << YELLOW << "[" << CurrentTime() << "] [WARN] " << RESET << message << "\n";
-#endif
-    }
+        WORD colorCode = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+        if (level == "INFO")  colorCode = InfoColor;
+        if (level == "WARN")  colorCode = WarnColor;
+        if (level == "ERROR") colorCode = ErrorColor;
 
-    template<typename... Args>
-    void LogError(const std::string& format_str, Args&&... args) {
-        std::string message = std::vformat(format_str, std::make_format_args(args...));
-
-#ifdef _WIN32
-        SetConsoleColor(ErrorColor);
-        std::cerr << "[" << CurrentTime() << "] [ERROR] ";
+        SetConsoleColor(colorCode);
+        std::ostream& out = (level == "ERROR") ? std::cerr : std::cout;
+        out << "[" << CurrentTime() << "] [" << level << "] ";
         SetConsoleColor(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); // reset
-        std::cerr << message << "\n";
+        out << "(" << file << ":" << line << " " << function << ") " << message << "\n";
 #else
-        std::cerr << RED << "[" << CurrentTime() << "] [ERROR] " << RESET << message << "\n";
+        std::ostream& out = (level == "ERROR") ? std::cerr : std::cout;
+        out << color << "[" << CurrentTime() << "] [" << level << "] " << RESET
+            << "(" << file << ":" << line << " " << function << ") " << message << "\n";
 #endif
     }
 
 } // namespace Logger
 
-using Logger::Log;
-using Logger::LogWarn;
-using Logger::LogError;
+#ifdef _WIN32
+#define Log(fmt, ...)      Logger::LogInternal(Logger::BaseFileName(__FILE__), __func__, __LINE__, "INFO",  "", fmt, ##__VA_ARGS__)
+#define LogWarn(fmt, ...)  Logger::LogInternal(Logger::BaseFileName(__FILE__), __func__, __LINE__, "WARN",  "", fmt, ##__VA_ARGS__)
+#define LogError(fmt, ...) Logger::LogInternal(Logger::BaseFileName(__FILE__), __func__, __LINE__, "ERROR", "", fmt, ##__VA_ARGS__)
+#else
+#define Log(fmt, ...)      Logger::LogInternal(Logger::BaseFileName(__FILE__), __func__, __LINE__, "INFO",  Logger::CYAN,   fmt, ##__VA_ARGS__)
+#define LogWarn(fmt, ...)  Logger::LogInternal(Logger::BaseFileName(__FILE__), __func__, __LINE__, "WARN",  Logger::YELLOW, fmt, ##__VA_ARGS__)
+#define LogError(fmt, ...) Logger::LogInternal(Logger::BaseFileName(__FILE__), __func__, __LINE__, "ERROR", Logger::RED,   fmt, ##__VA_ARGS__)
+#endif
