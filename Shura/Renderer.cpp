@@ -8,6 +8,7 @@ bool Renderer::create_device()
 	{
 		return false;
 	}
+
 	return true;
 }
 

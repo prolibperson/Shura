@@ -1,4 +1,6 @@
 #include "Engine.h"
+#include <chrono>
+//#include "SDL3\SDL_gpu.h"
 
 bool Engine::init()
 {
@@ -16,6 +18,11 @@ bool Engine::init()
     /* select window for device */
     SDL_ClaimWindowForGPUDevice(renderer_inst.get_device(), window);
     Log("Window selected for device");
+
+    /* swapchain params */
+    SDL_SetGPUSwapchainParameters(renderer_inst.get_device(), window,
+        SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
+        SDL_GPU_PRESENTMODE_IMMEDIATE);
 
 	if (!shader_inst.load_shaders("shaders/vertex.spv", "shaders/fragment.spv", renderer_inst.get_device()))
 	{
@@ -53,6 +60,11 @@ bool Engine::poll_events()
 void Engine::run()
 {
     Log("Entered main loop");
+
+    using clock = std::chrono::high_resolution_clock;
+    auto last_log_time = clock::now();
+    int frame_count = 0;
+
     while (running)
     {
         if (!poll_events())
@@ -61,6 +73,20 @@ void Engine::run()
         renderer_inst.begin_frame();
         renderer_inst.draw(shader_inst.get_pipeline());
         renderer_inst.end_frame();
+
+        frame_count++;
+
+        auto now = clock::now();
+        std::chrono::duration<float> elapsed = now - last_log_time;
+
+        if (elapsed.count() >= 0.5f)
+        {
+            float fps = frame_count / elapsed.count();
+            Log("FPS: " + std::to_string(fps));
+
+            frame_count = 0;
+            last_log_time = now;
+        }
     }
 }
 
