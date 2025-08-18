@@ -14,9 +14,9 @@ public:
 
 	bool setup_pipeline(SDL_GPUDevice* device, SDL_Window* window);
 
-	SDL_GPUShader* get_vertex_shader() { return vertex_shader; }
-	SDL_GPUShader* get_fragment_shader() { return fragment_shader; }
-	SDL_GPUGraphicsPipeline* get_pipeline() { return graphics_pipeline; }
+	inline SDL_GPUShader* get_vertex_shader() { return vertex_shader; }
+	inline SDL_GPUShader* get_fragment_shader() { return fragment_shader; }
+	inline SDL_GPUGraphicsPipeline* get_pipeline() { return graphics_pipeline; }
 
 private:
 	SDL_GPUShader* vertex_shader = nullptr;
