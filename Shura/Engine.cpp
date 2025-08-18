@@ -17,6 +17,20 @@ bool Engine::init()
     SDL_ClaimWindowForGPUDevice(renderer_inst.get_device(), window);
     Log("Window selected for device");
 
+	if (!shader_inst.load_shaders("shaders/vertex.spv", "shaders/fragment.spv", renderer_inst.get_device()))
+	{
+		LogError("Failed to load shaders");
+		return false;
+	}
+	Log("Shaders loaded");
+
+	if (!shader_inst.setup_pipeline(renderer_inst.get_device(), window))
+	{
+		LogError("Failed to setup graphics pipeline");
+		return false;
+	}
+    Log("Graphics pipeline setup complete");
+
     return true;
 }
 
@@ -45,6 +59,7 @@ void Engine::run()
             break;
 
         renderer_inst.begin_frame();
+        renderer_inst.draw(shader_inst.get_pipeline());
         renderer_inst.end_frame();
     }
 }
@@ -56,6 +71,11 @@ void Engine::shutdown()
     /* yes i made this with a migraine, how did you know? */
     SDL_ReleaseGPUBuffer(renderer_inst.get_device(), renderer_inst.mesh_inst.get_vertex_buffer());
     SDL_ReleaseGPUTransferBuffer(renderer_inst.get_device(), renderer_inst.mesh_inst.get_transfer_buffer());
+
+    SDL_ReleaseGPUShader(renderer_inst.get_device(), shader_inst.get_vertex_shader());
+    SDL_ReleaseGPUShader(renderer_inst.get_device(), shader_inst.get_fragment_shader());
+
+    SDL_ReleaseGPUGraphicsPipeline(renderer_inst.get_device(), shader_inst.get_pipeline());
 
     SDL_DestroyGPUDevice(renderer_inst.get_device());
     SDL_DestroyWindow(window);

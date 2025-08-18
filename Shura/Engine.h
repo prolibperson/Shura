@@ -16,6 +16,7 @@ private:
 	SDL_Window* window = nullptr;
 
 	Renderer renderer_inst{};
+	Shader shader_inst{};
 
 	bool poll_events();
 };

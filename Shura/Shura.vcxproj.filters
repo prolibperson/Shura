@@ -48,6 +48,9 @@
     <Filter Include="Misc">
       <UniqueIdentifier>{89d2a8c7-df51-44f1-9713-16ac9e886b85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\Shader\GLSL">
+      <UniqueIdentifier>{4886de6e-3583-451d-8fb2-e2de8b78f14d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h">
@@ -77,8 +80,17 @@
     <ClInclude Include="Vertex.h">
       <Filter>Graphics\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="UniformBuffers.h">
+      <Filter>Graphics\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
+    <None Include="..\Client\Shaders\fragment.glsl">
+      <Filter>Graphics\Shader\GLSL</Filter>
+    </None>
+    <None Include="..\Client\Shaders\vertex.glsl">
+      <Filter>Graphics\Shader\GLSL</Filter>
+    </None>
   </ItemGroup>
 </Project>

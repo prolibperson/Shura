@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "UniformBuffers.h"
 
 bool Renderer::create_device()
 {
@@ -85,7 +86,7 @@ void Renderer::begin_frame()
 	}
 
 	/* color target */
-	color_target_info.clear_color = { 240 / 255.0f, 240 / 255.0f, 240 / 255.0f, 255 / 255.0f };
+	color_target_info.clear_color = { 0.0f, 0.0f, 0.0f, 1.0f };
 	color_target_info.load_op = SDL_GPU_LOADOP_CLEAR;
 	color_target_info.store_op = SDL_GPU_STOREOP_STORE;
 	color_target_info.texture = swapchain_texture;
@@ -94,8 +95,23 @@ void Renderer::begin_frame()
 	render_pass = SDL_BeginGPURenderPass(command_buffer, &color_target_info, 1, NULL);
 }
 
-void Renderer::draw(Mesh& mesh, Shader& shader)
+void Renderer::draw(SDL_GPUGraphicsPipeline* graphics_pipeline)
 {
+	/* bind pipeline */
+	SDL_BindGPUGraphicsPipeline(render_pass, graphics_pipeline);
+
+	/* bind vert buffer */
+	SDL_GPUBufferBinding bufferBindings[1];
+	bufferBindings[0].buffer = mesh_inst.get_vertex_buffer();
+	bufferBindings[0].offset = 0;
+	SDL_BindGPUVertexBuffers(render_pass, 0, bufferBindings, 1);
+
+	/* uniform buffer for pulsating effect */
+	time_uniform.time = SDL_GetTicksNS() / 1e9f;
+	SDL_PushGPUFragmentUniformData(command_buffer, 0, &time_uniform, sizeof(uniform_buffer));
+
+	/* make draw call hello? hi! i would like to draw ok thanks */
+	SDL_DrawGPUPrimitives(render_pass, 3, 1, 0, 0);
 }
 
 void Renderer::end_frame()

@@ -8,7 +8,7 @@ class Renderer
 public:
 	bool init(SDL_Window* window);
 	void begin_frame();
-	void draw(Mesh& mesh, Shader& shader);
+	void draw(SDL_GPUGraphicsPipeline* graphics_pipeline);
 	void end_frame();
 
 	Mesh mesh_inst{};

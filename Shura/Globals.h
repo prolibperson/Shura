@@ -5,8 +5,8 @@
 
 constexpr const char* engine_name = "Shura";
 
-constexpr short window_width = 960;
-constexpr short window_height = 540;
+constexpr short window_width = 1280;
+constexpr short window_height = 720;
 
 #ifdef _DEBUG
 constexpr bool isDebug = true;
