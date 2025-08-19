@@ -4,22 +4,13 @@
 bool Renderer::create_device()
 {
 	device = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_MSL, isDebug, NULL);
-	if (device == NULL)
-	{
-		return false;
-	}
-
-	return true;
+	return device != nullptr;
 }
 
 bool Renderer::create_command_buffer()
 {
 	command_buffer = SDL_AcquireGPUCommandBuffer(device);
-	if (command_buffer == NULL)
-	{
-		return false;
-	}
-	return true;
+	return command_buffer != nullptr;
 }
 
 bool Renderer::init(SDL_Window* window)
@@ -50,6 +41,14 @@ bool Renderer::init(SDL_Window* window)
 	}
 	Log("Vertex buffer created");
 
+	/* make index buffer */
+	if (!mesh_inst.create_index_buffer(device))
+	{
+		LogError("Failed to create index buffer");
+		return false;
+	}
+	Log("Index buffer created");
+
 	/* make transfer buffer */
 	if (!mesh_inst.create_transfer_buffer(device))
 	{
@@ -60,12 +59,14 @@ bool Renderer::init(SDL_Window* window)
 
 	/* triangle mesh */
 	/* TODO: error checking cuz nothing returns false in the func ;-; */
-	if (!mesh_inst.make_triangle(device))
+	if (!mesh_inst.make_mesh(device))
 	{
-		LogError("Failed to create triangle mesh");
+		LogError("Failed to create mesh");
 		return false;
 	}
-	Log("Triangle mesh created");
+	Log("Mesh created");
+
+	Log("Index count: {}", mesh_inst.get_index_count());
 
 	return true;
 }
@@ -102,17 +103,23 @@ void Renderer::draw(SDL_GPUGraphicsPipeline* graphics_pipeline)
 	SDL_BindGPUGraphicsPipeline(render_pass, graphics_pipeline);
 
 	/* bind vert buffer */
-	SDL_GPUBufferBinding bufferBindings[1];
-	bufferBindings[0].buffer = mesh_inst.get_vertex_buffer();
-	bufferBindings[0].offset = 0;
-	SDL_BindGPUVertexBuffers(render_pass, 0, bufferBindings, 1);
+	SDL_GPUBufferBinding buffer_bindings[1];
+	buffer_bindings[0].buffer = mesh_inst.get_vertex_buffer();
+	buffer_bindings[0].offset = 0;
+	SDL_BindGPUVertexBuffers(render_pass, 0, buffer_bindings, 1);
+
+	/* bind index buffer */
+	SDL_GPUBufferBinding index_bindings{};
+	index_bindings.buffer = mesh_inst.get_index_buffer();
+	index_bindings.offset = 0;
+	SDL_BindGPUIndexBuffer(render_pass, &index_bindings, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 
 	/* uniform buffer for pulsating effect */
 	time_uniform.time = SDL_GetTicksNS() / 1e9f;
 	SDL_PushGPUFragmentUniformData(command_buffer, 0, &time_uniform, sizeof(uniform_buffer));
 
 	/* make draw call hello? hi! i would like to draw ok thanks */
-	SDL_DrawGPUPrimitives(render_pass, 3, 1, 0, 0);
+	SDL_DrawGPUIndexedPrimitives(render_pass, mesh_inst.get_index_count(), 1, 0, 0, 0);
 }
 
 void Renderer::end_frame()

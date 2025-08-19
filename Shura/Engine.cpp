@@ -96,6 +96,7 @@ void Engine::shutdown()
 
     /* yes i made this with a migraine, how did you know? */
     SDL_ReleaseGPUBuffer(renderer_inst.get_device(), renderer_inst.mesh_inst.get_vertex_buffer());
+    SDL_ReleaseGPUBuffer(renderer_inst.get_device(), renderer_inst.mesh_inst.get_index_buffer());
     SDL_ReleaseGPUTransferBuffer(renderer_inst.get_device(), renderer_inst.mesh_inst.get_transfer_buffer());
 
     SDL_ReleaseGPUShader(renderer_inst.get_device(), shader_inst.get_vertex_shader());
