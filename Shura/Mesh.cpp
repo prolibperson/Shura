@@ -59,7 +59,6 @@ bool Mesh::load_obj(const std::string& path)
     indices.clear();
     materials.clear();
 
-    // Convert TinyObj materials to our Material struct
     for (const auto& mat : materials_tiny) {
         Material m{};
         strncpy_s(m.name, mat.name.c_str(), sizeof(m.name) - 1);
@@ -76,7 +75,6 @@ bool Mesh::load_obj(const std::string& path)
         m.refractive_index = mat.ior;
         m.illumination_model = mat.illum;
 
-        // Store relative texture paths
         m.diffuse_map_path
             = mat.diffuse_texname.empty() ? "" : directory + mat.diffuse_texname;
         m.has_diffuse_map = !m.diffuse_map_path.empty();
@@ -99,21 +97,17 @@ bool Mesh::load_obj(const std::string& path)
         materials.push_back(m);
     }
 
-    // Build vertex buffer and index buffer
     for (const auto& shape : shapes) {
         for (const auto& index : shape.mesh.indices) {
             Vertex v{};
 
-            // Vertex position
             v.x = attrib.vertices[3 * index.vertex_index + 0];
             v.y = attrib.vertices[3 * index.vertex_index + 1];
             v.z = attrib.vertices[3 * index.vertex_index + 2];
 
-            // Default color
             v.r = v.g = v.b = 0.8f;
             v.a = 1.0f;
 
-            // Vertex normal
             if (index.normal_index >= 0) {
                 v.nx = attrib.normals[3 * index.normal_index + 0];
                 v.ny = attrib.normals[3 * index.normal_index + 1];
