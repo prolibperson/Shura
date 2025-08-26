@@ -1,9 +1,18 @@
 #pragma once
 #include "Globals.h"
+#include "glm/glm.hpp"
 
-struct uniform_buffer
+struct uniform_buffer_frag
 {
-    float time;
+    glm::vec4 time;
 };
 
-static uniform_buffer time_uniform{};
+struct uniform_buffer_vert
+{
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 projection;
+};
+
+static uniform_buffer_frag ubo_frag{};
+static uniform_buffer_vert ubo_vert{};

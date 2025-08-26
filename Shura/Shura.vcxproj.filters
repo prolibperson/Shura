@@ -22,6 +22,15 @@
     <ClCompile Include="main.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="tiny_obj_loader.cc">
+      <Filter>Graphics\Mesh\TOL</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Engine\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Engine\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -51,6 +60,18 @@
     <Filter Include="Graphics\Shader\GLSL">
       <UniqueIdentifier>{4886de6e-3583-451d-8fb2-e2de8b78f14d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\Mesh\TOL">
+      <UniqueIdentifier>{6e3a8a83-880f-461b-b462-53f0888ff2a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Camera">
+      <UniqueIdentifier>{6b6a8bcb-7584-4510-a2fe-376465715abe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Input">
+      <UniqueIdentifier>{3bc5c8c8-13d8-4ff9-ad32-91dfc9bd756b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Mesh\Structs">
+      <UniqueIdentifier>{db030fc9-be34-43ed-aabe-0a045b7e05e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h">
@@ -77,11 +98,23 @@
     <ClInclude Include="Logger.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Graphics\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="UniformBuffers.h">
       <Filter>Graphics\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="tiny_obj_loader.h">
+      <Filter>Graphics\Mesh\TOL</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Engine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Graphics\Mesh\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Graphics\Mesh\Structs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -92,5 +125,6 @@
     <None Include="..\Client\Shaders\vertex.glsl">
       <Filter>Graphics\Shader\GLSL</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

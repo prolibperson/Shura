@@ -1,21 +1,28 @@
 #pragma once
 #include "Globals.h"
+#include "Material.h"
 #include "Vertex.h"
 
-class Mesh
-{
+class Mesh {
 public:
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+	std::vector<Material> materials;
+
 	bool make_mesh(SDL_GPUDevice* device);
 
 	bool create_transfer_buffer(SDL_GPUDevice* device);
 	bool create_vertex_buffer(SDL_GPUDevice* device);
 	bool create_index_buffer(SDL_GPUDevice* device);
 
+	bool load_obj(const std::string& path);
+
 	inline Vertex* get_vert_data() { return vert_data; }
 	inline SDL_GPUBuffer* get_vertex_buffer() { return vertex_buffer; }
 	inline SDL_GPUBuffer* get_index_buffer() { return index_buffer; }
-	inline Uint32 get_index_count() { return sizeof(indices) / sizeof(uint16_t); }
+	inline Uint32 get_index_count() { return static_cast<Uint32>(indices.size()); }
 	inline SDL_GPUTransferBuffer* get_transfer_buffer() { return transfer_buffer; }
+
 private:
 	SDL_GPUTransferBuffer* transfer_buffer = nullptr;
 
@@ -28,4 +35,3 @@ private:
 	SDL_GPUBufferCreateInfo buffer_info{};
 	SDL_GPUBufferCreateInfo index_info{};
 };
-
