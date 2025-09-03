@@ -2,6 +2,7 @@
 #include <SDL3_image/SDL_image.h>
 #include "UniformBuffers.h"
 #include <future>
+#include <vector>
 
 bool Renderer::create_device()
 {

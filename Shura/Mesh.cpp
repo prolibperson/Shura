@@ -43,7 +43,6 @@ uint32_t Mesh::get_index_count()
     return static_cast<uint32_t>(count);
 }
 
-/* TODO: actually assign the materials to faces and vertices */
 bool Mesh::load_obj(const std::string& path)
 {
     Log("Loading OBJ at path {}", path);
