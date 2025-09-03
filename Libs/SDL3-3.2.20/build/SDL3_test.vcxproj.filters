@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\src\test\SDL_test_assert.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\src\test\SDL_test_common.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\src\test\SDL_test_compare.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\src\test\SDL_test_crc32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\src\test\SDL_test_font.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\src\test\SDL_test_fuzzer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\src\test\SDL_test_harness.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\src\test\SDL_test_log.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\src\test\SDL_test_md5.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\src\test\SDL_test_memory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\prolib\source\repos\Shura\Libs\SDL3-3.2.20\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{8A0471A9-CBDC-3111-B240-602C093F2140}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

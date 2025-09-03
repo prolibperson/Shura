@@ -3,6 +3,7 @@
 /* sdl */
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
+#include "SDL3_shadercross/SDL_shadercross.h"
 
 /* imgui */
 #include "imgui.h"
@@ -23,3 +24,12 @@ constexpr bool isDebug = true;
 #else
 constexpr bool isDebug = false;
 #endif
+
+#define ENSURE(func, success_msg, error_msg) \
+    do { \
+        if (!(func)) { \
+            LogError("{}: {}", (error_msg), SDL_GetError()); \
+            return false; \
+        } \
+        Log("{}", (success_msg)); \
+    } while(0)

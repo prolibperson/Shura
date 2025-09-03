@@ -1,4 +1,4 @@
-﻿#include "Engine.h"
+#include "Engine.h"
 #include <chrono>
 
 bool Engine::init()
@@ -13,10 +13,7 @@ bool Engine::init()
     Log("Window created");
 
     /* init renderer */
-    if (!renderer_inst.init(window, &input_inst.camera_inst, &input_inst)) {
-        LogError("Failed to init renderer");
-        return false;
-    }
+    ENSURE(renderer_inst.init(window, &input_inst.camera_inst, &input_inst), "Renderer initialized", "Failed to init renderer");
 
     /* select window for device */
     SDL_ClaimWindowForGPUDevice(renderer_inst.get_device(), window);
@@ -50,18 +47,14 @@ bool Engine::init()
     SDL_SetGPUSwapchainParameters(renderer_inst.get_device(), window,
         SDL_GPU_SWAPCHAINCOMPOSITION_SDR, SDL_GPU_PRESENTMODE_IMMEDIATE);
 
-    if (!shader_inst.load_shaders("shaders/spv/vertex.spv", "shaders/spv/fragment.spv",
-        renderer_inst.get_device())) {
-        LogError("Failed to load shaders");
-        return false;
-    }
-    Log("Shaders loaded");
+    /* load shaders */
+    ENSURE(shader_inst.load_shaders(
+        "shaders/spv/vertex.spv",
+        "shaders/spv/fragment.spv",
+        renderer_inst.get_device()), "Shaders loaded", "Failed to load shaders");
 
-    if (!shader_inst.setup_pipeline(renderer_inst.get_device(), window)) {
-        LogError("Failed to setup graphics pipeline");
-        return false;
-    }
-    Log("Pipeline initialized");
+    /* setup pipeline */
+    ENSURE(shader_inst.setup_pipeline(renderer_inst.get_device(), window), "Pipeline initialized", "Failed to setup graphics pipeline");
 
     input_inst.camera_inst.init(
         glm::vec3(
@@ -148,29 +141,16 @@ void Engine::shutdown()
     ImGui_ImplSDLGPU3_Shutdown();
     ImGui::DestroyContext();
 
-    /* yes i made this with a migraine, how did you know? */
-    SDL_ReleaseGPUBuffer(
-        renderer_inst.get_device(), renderer_inst.mesh_inst.get_vertex_buffer());
-    SDL_ReleaseGPUBuffer(
-        renderer_inst.get_device(), renderer_inst.mesh_inst.get_index_buffer());
-    SDL_ReleaseGPUTransferBuffer(
-        renderer_inst.get_device(), renderer_inst.mesh_inst.get_transfer_buffer());
-
     SDL_ReleaseGPUShader(
         renderer_inst.get_device(), shader_inst.get_vertex_shader());
     SDL_ReleaseGPUShader(
         renderer_inst.get_device(), shader_inst.get_fragment_shader());
 
-    if (renderer_inst.get_depth_texture())
-        SDL_ReleaseGPUTexture(
-            renderer_inst.get_device(), renderer_inst.get_depth_texture());
-
     if (shader_inst.get_pipeline())
         SDL_ReleaseGPUGraphicsPipeline(
             renderer_inst.get_device(), shader_inst.get_pipeline());
 
-    if (renderer_inst.get_device())
-        SDL_DestroyGPUDevice(renderer_inst.get_device());
+	renderer_inst.cleanup();
 
     SDL_DestroyWindow(window);
 }

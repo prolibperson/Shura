@@ -1,0 +1,13 @@
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/lib/pkgconfig/sdl3.pc
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/lib/SDL3.lib
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/bin/SDL3.dll
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/lib/SDL3_test.lib
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/cmake/SDL3headersTargets.cmake
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/cmake/SDL3sharedTargets.cmake
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/cmake/SDL3sharedTargets-release.cmake
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/cmake/SDL3testTargets.cmake
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/cmake/SDL3testTargets-release.cmake
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/cmake/SDL3Config.cmake
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/cmake/SDL3ConfigVersion.cmake
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/include/SDL3/SDL_revision.h
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/licenses/SDL3/LICENSE.txt

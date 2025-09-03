@@ -1,6 +1,6 @@
 #pragma once
+#include "Mesh.h"
 #include "Camera.h"
-#include "Globals.h"
 #include "Input.h"
 #include "Mesh.h"
 #include "Shader.h"
@@ -12,7 +12,11 @@ public:
 	void draw(SDL_GPUGraphicsPipeline* graphics_pipeline);
 	void end_frame();
 
+	void cleanup();
+
 	bool create_depth_texture();
+	bool create_sampler();
+	SDL_GPUTexture* load_texture(const char* path);
 
 	Mesh mesh_inst{};
 
@@ -22,6 +26,8 @@ public:
 	inline SDL_GPUTexture* get_depth_texture() { return depth_texture; }
 
 private:
+	SDL_GPUSampler* default_sampler = nullptr;
+
 	SDL_GPUDevice* device = nullptr;
 	SDL_GPUCommandBuffer* command_buffer = nullptr;
 

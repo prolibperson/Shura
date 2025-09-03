@@ -1901,12 +1901,12 @@ SDL_ShaderCross_GraphicsShaderMetadata * SDL_ShaderCross_ReflectGraphicsSPIRV(
     SDL_ShaderCross_INTERNAL_GetIOVars(compiler, reflected_resources, num_outputs, allocMetadata->outputs, allocMemory + offset_outputnames);
     spvc_context_destroy(context);
 
-    allocMetadata->num_samplers = num_texture_samplers;
-    allocMetadata->num_storage_textures = num_storage_textures;
-    allocMetadata->num_storage_buffers = num_storage_buffers;
-    allocMetadata->num_uniform_buffers = num_uniform_buffers;
-    allocMetadata->num_inputs = num_inputs;
-    allocMetadata->num_outputs = num_outputs;
+    allocMetadata->num_samplers = (Uint32)num_texture_samplers;
+    allocMetadata->num_storage_textures = (Uint32)num_storage_textures;
+    allocMetadata->num_storage_buffers = (Uint32)num_storage_buffers;
+    allocMetadata->num_uniform_buffers = (Uint32)num_uniform_buffers;
+    allocMetadata->num_inputs = (Uint32)num_inputs;
+    allocMetadata->num_outputs = (Uint32)num_outputs;
 
     return allocMetadata;
 }
@@ -2127,12 +2127,12 @@ SDL_ShaderCross_ComputePipelineMetadata * SDL_ShaderCross_ReflectComputeSPIRV(
 
     spvc_context_destroy(context);
 
-    metadata->num_samplers = num_texture_samplers;
-    metadata->num_readonly_storage_textures = num_readonly_storage_textures;
-    metadata->num_readonly_storage_buffers = num_readonly_storage_buffers;
-    metadata->num_readwrite_storage_textures = num_readwrite_storage_textures;
-    metadata->num_readwrite_storage_buffers = num_readwrite_storage_buffers;
-    metadata->num_uniform_buffers = num_uniform_buffers;
+    metadata->num_samplers = (Uint32)num_texture_samplers;
+    metadata->num_readonly_storage_textures = (Uint32)num_readonly_storage_textures;
+    metadata->num_readonly_storage_buffers = (Uint32)num_readonly_storage_buffers;
+    metadata->num_readwrite_storage_textures = (Uint32)num_readwrite_storage_textures;
+    metadata->num_readwrite_storage_buffers = (Uint32)num_readwrite_storage_buffers;
+    metadata->num_uniform_buffers = (Uint32)num_uniform_buffers;
     return metadata;
 }
 

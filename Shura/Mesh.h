@@ -3,10 +3,16 @@
 #include "Material.h"
 #include "Vertex.h"
 
+struct sub_mesh
+{
+	uint32_t material_index;
+	std::vector<uint32_t> indices;
+};
+
 class Mesh {
 public:
 	std::vector<Vertex> vertices;
-	std::vector<uint32_t> indices;
+	std::vector<sub_mesh> sub_meshes;
 	std::vector<Material> materials;
 
 	bool make_mesh(SDL_GPUDevice* device);
@@ -14,13 +20,14 @@ public:
 	bool create_transfer_buffer(SDL_GPUDevice* device);
 	bool create_vertex_buffer(SDL_GPUDevice* device);
 	bool create_index_buffer(SDL_GPUDevice* device);
+	uint32_t get_index_count();
 
 	bool load_obj(const std::string& path);
 
 	inline Vertex* get_vert_data() { return vert_data; }
 	inline SDL_GPUBuffer* get_vertex_buffer() { return vertex_buffer; }
 	inline SDL_GPUBuffer* get_index_buffer() { return index_buffer; }
-	inline Uint32 get_index_count() { return static_cast<Uint32>(indices.size()); }
+	inline size_t get_submesh_count() { return sub_meshes.size(); }
 	inline SDL_GPUTransferBuffer* get_transfer_buffer() { return transfer_buffer; }
 
 private:

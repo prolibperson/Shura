@@ -7,19 +7,18 @@ bool Shader::load_vertex(const char* filename, SDL_GPUDevice* device)
     size_t vertex_code_size;
     void* vertex_code = SDL_LoadFile(filename, &vertex_code_size);
 
-    SDL_GPUShaderCreateInfo vertex_info{};
-    vertex_info.code = (Uint8*)vertex_code;
-    vertex_info.code_size = vertex_code_size;
-    vertex_info.entrypoint = "main";
-    vertex_info.format = SDL_GPU_SHADERFORMAT_SPIRV;
-    vertex_info.stage = SDL_GPU_SHADERSTAGE_VERTEX;
-    vertex_info.num_samplers = 0;
-    vertex_info.num_storage_buffers = 0;
-    vertex_info.num_storage_textures = 0;
-    vertex_info.num_uniform_buffers = 1;
-    vertex_shader = SDL_CreateGPUShader(device, &vertex_info);
+	SDL_ShaderCross_SPIRV_Info vertex_info{};
+    vertex_info.bytecode = (uint8_t*)vertex_code;
+	vertex_info.bytecode_size = vertex_code_size;
+	vertex_info.entrypoint = "main";
+	vertex_info.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_VERTEX;
 
-    SDL_free(vertex_code);
+    SDL_ShaderCross_GraphicsShaderMetadata* vertex_metadata =
+        SDL_ShaderCross_ReflectGraphicsSPIRV((uint8_t*)vertex_code, vertex_code_size, 0);
+
+    vertex_shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(device, &vertex_info, vertex_metadata, 0);
+
+	SDL_free(vertex_metadata);
 
     return vertex_shader != nullptr;
 }
@@ -29,19 +28,18 @@ bool Shader::load_fragment(const char* filename, SDL_GPUDevice* device)
     size_t fragment_code_size;
     void* fragment_code = SDL_LoadFile(filename, &fragment_code_size);
 
-    SDL_GPUShaderCreateInfo fragment_info{};
-    fragment_info.code = (Uint8*)fragment_code;
-    fragment_info.code_size = fragment_code_size;
+    SDL_ShaderCross_SPIRV_Info fragment_info{};
+    fragment_info.bytecode = (uint8_t*)fragment_code;
+    fragment_info.bytecode_size = fragment_code_size;
     fragment_info.entrypoint = "main";
-    fragment_info.format = SDL_GPU_SHADERFORMAT_SPIRV;
-    fragment_info.stage = SDL_GPU_SHADERSTAGE_FRAGMENT;
-    fragment_info.num_samplers = 0;
-    fragment_info.num_storage_buffers = 0;
-    fragment_info.num_storage_textures = 0;
-    fragment_info.num_uniform_buffers = 1;
-    fragment_shader = SDL_CreateGPUShader(device, &fragment_info);
+    fragment_info.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_FRAGMENT;
 
-    SDL_free(fragment_code);
+    SDL_ShaderCross_GraphicsShaderMetadata* fragment_metadata =
+        SDL_ShaderCross_ReflectGraphicsSPIRV((uint8_t*)fragment_code, fragment_code_size, 0);
+
+    fragment_shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(device, &fragment_info, fragment_metadata, 0);
+
+    SDL_free(fragment_metadata);
 
     return fragment_shader != nullptr;
 }
@@ -65,7 +63,7 @@ bool Shader::setup_pipeline(SDL_GPUDevice* device, SDL_Window* window)
     pipeline_info.vertex_input_state.vertex_buffer_descriptions
         = vertex_buffer_descriptions;
 
-    SDL_GPUVertexAttribute vertex_attributes[3];
+        SDL_GPUVertexAttribute vertex_attributes[4];
 
     /* position */
     vertex_attributes[0].buffer_slot = 0;
@@ -85,7 +83,13 @@ bool Shader::setup_pipeline(SDL_GPUDevice* device, SDL_Window* window)
     vertex_attributes[2].format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3;
     vertex_attributes[2].offset = sizeof(float) * 7;
 
-    pipeline_info.vertex_input_state.num_vertex_attributes = 3;
+    /* texcoord */
+    vertex_attributes[3].buffer_slot = 0;
+    vertex_attributes[3].location = 3;
+    vertex_attributes[3].format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2;
+    vertex_attributes[3].offset = sizeof(float) * 10;
+
+    pipeline_info.vertex_input_state.num_vertex_attributes = 4;
     pipeline_info.vertex_input_state.vertex_attributes = vertex_attributes;
 
     SDL_GPUColorTargetDescription color_target_descriptions[1];

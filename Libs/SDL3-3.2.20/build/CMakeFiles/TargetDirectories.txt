@@ -1,0 +1,8 @@
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/build/CMakeFiles/SDL3-shared.dir
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/build/CMakeFiles/SDL3_test.dir
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/build/CMakeFiles/SDL_uclibc.dir
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/build/CMakeFiles/uninstall.dir
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/build/CMakeFiles/PACKAGE.dir
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/build/CMakeFiles/INSTALL.dir
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/prolib/source/repos/Shura/Libs/SDL3-3.2.20/build/CMakeFiles/ZERO_CHECK.dir
