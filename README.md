@@ -1,6 +1,6 @@
 # Shura
 
-A **SDL3 engine** built with **SDL_GPU**.
+An **SDL3 engine** built with **SDL_GPU**.
 
 ---
 
