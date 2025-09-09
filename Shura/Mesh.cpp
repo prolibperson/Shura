@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "fast_obj.h"
+#include "UniformBuffers.h"
 #include <fstream>
 #include <future>
 #include <execution>
@@ -94,6 +95,23 @@ bool Mesh::load_obj(const std::string& path)
         materials.push_back(m);
     }
 
+    /* default material :D */
+    if (materials.empty())
+    {
+        Material default_mat{};
+        strncpy_s(default_mat.name, "default", sizeof(default_mat.name) - 1);
+
+        default_mat.diffuse = { 200, 200, 200, 255 };
+        default_mat.ambient = { 50, 50, 50, 255 };
+        default_mat.specular = { 255, 255, 255, 255 };
+        default_mat.shininess = 32.0f;
+        default_mat.opacity = 1.0f;
+        default_mat.refractive_index = 1.0f;
+        default_mat.illumination_model = 2;
+
+        materials.push_back(default_mat);
+	}
+
     sub_meshes.resize(materials.size());
     for (size_t i = 0; i < materials.size(); ++i)
     {
@@ -104,6 +122,9 @@ bool Mesh::load_obj(const std::string& path)
     for (unsigned int f = 0; f < mesh->face_count; ++f) {
         unsigned int fv = mesh->face_vertices[f];
         unsigned int mat_id = mesh->face_materials[f];
+
+        if(mat_id >= sub_meshes.size())
+			mat_id = 0;
 
         for (unsigned int v = 0; v < fv; ++v) {
             fastObjIndex idx = mesh->indices[index_offset + v];
@@ -158,25 +179,34 @@ bool Mesh::load_obj(const std::string& path)
     return true;
 }
 
-bool Mesh::make_mesh(SDL_GPUDevice* device)
+bool Mesh::make_mesh(SDL_GPUDevice* device, SDL_GPUCommandBuffer* command_buffer)
 {
-    uint8_t* mapped
-        = (uint8_t*)SDL_MapGPUTransferBuffer(device, transfer_buffer, false);
+    uint8_t* mapped = (uint8_t*)SDL_MapGPUTransferBuffer(device, transfer_buffer, false);
     if (!mapped)
         return false;
 
-    SDL_memcpy(mapped, vertices.data(), vertices.size() * sizeof(Vertex));
+    size_t vertex_bytes = vertices.size() * sizeof(Vertex);
+    SDL_memcpy(mapped, vertices.data(), vertex_bytes);
 
-    size_t index_buffer_offset = vertices.size() * sizeof(Vertex);
+    size_t index_buffer_offset = vertex_bytes;
     for (const auto& sm : sub_meshes)
     {
-        SDL_memcpy(mapped + index_buffer_offset, sm.indices.data(), sm.indices.size() * sizeof(uint32_t));
-        index_buffer_offset += sm.indices.size() * sizeof(uint32_t);
+        size_t bytes = sm.indices.size() * sizeof(uint32_t);
+        if (bytes > 0)
+        {
+            SDL_memcpy(mapped + index_buffer_offset, sm.indices.data(), bytes);
+            index_buffer_offset += bytes;
+        }
     }
 
     SDL_UnmapGPUTransferBuffer(device, transfer_buffer);
 
-    SDL_GPUCommandBuffer* command_buffer = SDL_AcquireGPUCommandBuffer(device);
+    if (!command_buffer)
+    {
+        LogError("make_mesh called without a valid command buffer :(");
+        return false;
+    }
+
     SDL_GPUCopyPass* copy_pass = SDL_BeginGPUCopyPass(command_buffer);
 
     SDL_GPUTransferBufferLocation vertex_location{};
@@ -185,14 +215,14 @@ bool Mesh::make_mesh(SDL_GPUDevice* device)
 
     SDL_GPUBufferRegion vertex_region{};
     vertex_region.buffer = vertex_buffer;
-    vertex_region.size = static_cast<uint32_t>(vertices.size() * sizeof(Vertex));
+    vertex_region.size = static_cast<uint32_t>(vertex_bytes);
     vertex_region.offset = 0;
 
     SDL_UploadToGPUBuffer(copy_pass, &vertex_location, &vertex_region, true);
 
     SDL_GPUTransferBufferLocation index_location{};
     index_location.transfer_buffer = transfer_buffer;
-    index_location.offset = (uint32_t)(vertices.size() * sizeof(Vertex));
+    index_location.offset = static_cast<uint32_t>(vertex_bytes);
 
     SDL_GPUBufferRegion index_region{};
     index_region.buffer = index_buffer;
@@ -202,7 +232,47 @@ bool Mesh::make_mesh(SDL_GPUDevice* device)
     SDL_UploadToGPUBuffer(copy_pass, &index_location, &index_region, true);
 
     SDL_EndGPUCopyPass(copy_pass);
-    SDL_SubmitGPUCommandBuffer(command_buffer);
 
     return true;
+}
+
+void Mesh::render(SDL_GPURenderPass* render_pass, uint32_t base_index_offset, SDL_GPUTexture* fallback_texture, SDL_GPUSampler* default_sampler)
+{
+    SDL_GPUBufferBinding buffer_bindings[1];
+    buffer_bindings[0].buffer = get_vertex_buffer();
+    buffer_bindings[0].offset = 0;
+    SDL_BindGPUVertexBuffers(render_pass, 0, buffer_bindings, 1);
+
+    SDL_GPUBufferBinding index_bindings{};
+    index_bindings.buffer = get_index_buffer();
+    index_bindings.offset = 0;
+    SDL_BindGPUIndexBuffer(render_pass, &index_bindings, SDL_GPU_INDEXELEMENTSIZE_32BIT);
+
+    uint32_t first_index = 0;
+    for (const auto& sub_mesh : sub_meshes)
+    {
+        const auto& mat = materials[sub_mesh.material_index];
+
+        SDL_GPUTexture* tex = (mat.has_diffuse_map && mat.diffuse_texture) ? mat.diffuse_texture : fallback_texture;
+        SDL_GPUSampler* samp = (mat.has_diffuse_map && mat.diffuse_sampler) ? mat.diffuse_sampler : default_sampler;
+
+        SDL_GPUTextureSamplerBinding ts_binding{};
+        ts_binding.texture = tex;
+        ts_binding.sampler = samp;
+        SDL_BindGPUFragmentSamplers(render_pass, 0, &ts_binding, 1);
+
+        const uint32_t index_count = static_cast<uint32_t>(sub_mesh.indices.size());
+        if (index_count == 0)
+            continue;
+
+        SDL_DrawGPUIndexedPrimitives(
+            render_pass,
+            index_count,
+            1,
+            first_index,
+            0,
+            0
+        );
+        first_index += index_count;
+    }
 }

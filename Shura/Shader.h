@@ -18,10 +18,12 @@ public:
     inline SDL_GPUShader* get_vertex_shader() { return vertex_shader; }
     inline SDL_GPUShader* get_fragment_shader() { return fragment_shader; }
     inline SDL_GPUGraphicsPipeline* get_pipeline() { return graphics_pipeline; }
+    inline SDL_GPUGraphicsPipeline* get_pipeline_wireframe() { return graphics_pipeline_wireframe; }
 
 private:
     SDL_GPUShader* vertex_shader = nullptr;
     SDL_GPUShader* fragment_shader = nullptr;
 
     SDL_GPUGraphicsPipeline* graphics_pipeline = nullptr;
+    SDL_GPUGraphicsPipeline* graphics_pipeline_wireframe = nullptr;
 };

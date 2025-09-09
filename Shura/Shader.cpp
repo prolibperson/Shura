@@ -123,13 +123,15 @@ bool Shader::setup_pipeline(SDL_GPUDevice* device, SDL_Window* window)
 
     pipeline_info.depth_stencil_state = depth_stencil;
 
-    /* wireframe */
-    // pipeline_info.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_LINE;
-
     graphics_pipeline = SDL_CreateGPUGraphicsPipeline(device, &pipeline_info);
+
+    /* wireframe */
+    pipeline_info.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_LINE;
+
+    graphics_pipeline_wireframe = SDL_CreateGPUGraphicsPipeline(device, &pipeline_info);
 
     SDL_ReleaseGPUShader(device, vertex_shader);
     SDL_ReleaseGPUShader(device, fragment_shader);
 
-    return graphics_pipeline != nullptr;
+    return (graphics_pipeline != nullptr) && (graphics_pipeline_wireframe != nullptr);
 }

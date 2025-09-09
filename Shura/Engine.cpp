@@ -71,6 +71,8 @@ bool Engine::init()
     return true;
 }
 
+bool wireframe = false;
+
 bool Engine::poll_events()
 {
     SDL_Event event;
@@ -84,6 +86,9 @@ bool Engine::poll_events()
         case SDL_EVENT_KEY_DOWN:
             if (event.key.scancode == SDL_SCANCODE_ESCAPE)
                 return false;
+
+            if (event.key.scancode == SDL_SCANCODE_F1)
+                wireframe = !wireframe;
         }
     }
     return true;
@@ -112,7 +117,12 @@ void Engine::run()
         input_inst.update_camera(deltaTime);
 
         renderer_inst.begin_frame();
-        renderer_inst.draw(shader_inst.get_pipeline());
+
+        if (wireframe)
+            renderer_inst.draw(shader_inst.get_pipeline_wireframe());
+        else
+            renderer_inst.draw(shader_inst.get_pipeline());
+
         renderer_inst.end_frame();
 
         frame_count++;

@@ -26,7 +26,9 @@ void main()
     vec3 N = normalize(v_normal);
 
     /* light dir */
-    vec3 light_dir = normalize(vec3(0.3, 1.0, 0.5));
+    float t = u_time.x;
+    float angle = t * 1; /* speed */
+    vec3 light_dir = normalize(vec3(sin(angle), 1.0, cos(angle)));
 
     /* diffuse and ambient terms */
     float diffuse = max(dot(N, light_dir), 0.0);

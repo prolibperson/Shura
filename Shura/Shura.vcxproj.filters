@@ -22,14 +22,17 @@
     <ClCompile Include="main.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="tiny_obj_loader.cc">
-      <Filter>Graphics\Mesh\TOL</Filter>
+    <ClCompile Include="fast_obj.c">
+      <Filter>Graphics\Mesh\Fast_OBJ</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Engine\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshManager.cpp">
+      <Filter>Graphics\MeshManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -60,9 +63,6 @@
     <Filter Include="Graphics\Shader\GLSL">
       <UniqueIdentifier>{4886de6e-3583-451d-8fb2-e2de8b78f14d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Graphics\Mesh\TOL">
-      <UniqueIdentifier>{6e3a8a83-880f-461b-b462-53f0888ff2a1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Camera">
       <UniqueIdentifier>{6b6a8bcb-7584-4510-a2fe-376465715abe}</UniqueIdentifier>
     </Filter>
@@ -71,6 +71,12 @@
     </Filter>
     <Filter Include="Graphics\Mesh\Structs">
       <UniqueIdentifier>{db030fc9-be34-43ed-aabe-0a045b7e05e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Mesh\Fast_OBJ">
+      <UniqueIdentifier>{6e3a8a83-880f-461b-b462-53f0888ff2a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\MeshManager">
+      <UniqueIdentifier>{76ceae3b-33b7-4de1-88e9-bad8d515e1a9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -101,8 +107,8 @@
     <ClInclude Include="UniformBuffers.h">
       <Filter>Graphics\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="tiny_obj_loader.h">
-      <Filter>Graphics\Mesh\TOL</Filter>
+    <ClInclude Include="fast_obj.h">
+      <Filter>Graphics\Mesh\Fast_OBJ</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Engine\Camera</Filter>
@@ -115,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Graphics\Mesh\Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshManager.h">
+      <Filter>Graphics\MeshManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

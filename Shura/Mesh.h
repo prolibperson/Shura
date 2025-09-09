@@ -15,7 +15,8 @@ public:
 	std::vector<sub_mesh> sub_meshes;
 	std::vector<Material> materials;
 
-	bool make_mesh(SDL_GPUDevice* device);
+	bool make_mesh(SDL_GPUDevice* device, SDL_GPUCommandBuffer* command_buffer);
+	void render(SDL_GPURenderPass* render_pass, uint32_t base_index_offset, SDL_GPUTexture* fallback_texture, SDL_GPUSampler* default_sampler);
 
 	bool create_transfer_buffer(SDL_GPUDevice* device);
 	bool create_vertex_buffer(SDL_GPUDevice* device);

@@ -28,7 +28,7 @@ void Input::handle_event(const SDL_Event& event, SDL_Window* window)
         case SDL_SCANCODE_LCTRL: {
             if (!down) {
                 lctrl = !lctrl;
-                // SDL_SetWindowMouseGrab(window, !lctrl);
+                SDL_SetWindowMouseGrab(window, !lctrl);
                 SDL_SetWindowRelativeMouseMode(window, !lctrl);
                 break;
             }
