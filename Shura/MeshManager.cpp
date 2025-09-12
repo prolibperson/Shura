@@ -1,11 +1,11 @@
 #include "MeshManager.h"
 
-SDL_GPUTexture* MeshManager::load_texture(const char* path, SDL_GPUDevice* device)
+SDL_GPUTexture* MeshManager::load_texture(
+    const char* path, SDL_GPUDevice* device)
 {
     Log("Path: {}", path);
     SDL_Surface* surface = IMG_Load(path);
-    if (!surface)
-    {
+    if (!surface) {
         LogError("Failed to load texture");
         return nullptr;
     }
@@ -18,8 +18,7 @@ SDL_GPUTexture* MeshManager::load_texture(const char* path, SDL_GPUDevice* devic
     int mip_levels = 1;
     int width = surface->w;
     int height = surface->h;
-    while (width > 1 || height > 1)
-    {
+    while (width > 1 || height > 1) {
         width = std::max(1, width / 2);
         height = std::max(1, height / 2);
         mip_levels++;
@@ -31,16 +30,19 @@ SDL_GPUTexture* MeshManager::load_texture(const char* path, SDL_GPUDevice* devic
     texture_info.layer_count_or_depth = 1;
     texture_info.num_levels = mip_levels;
     texture_info.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
-    texture_info.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET;
+    texture_info.usage
+        = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET;
     SDL_GPUTexture* texture = SDL_CreateGPUTexture(device, &texture_info);
 
     SDL_GPUTransferBufferCreateInfo upload_buffer_info = {};
     upload_buffer_info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
     upload_buffer_info.size = (size_t)surface->w * surface->h * 4;
-    SDL_GPUTransferBuffer* upload_buffer = SDL_CreateGPUTransferBuffer(device, &upload_buffer_info);
+    SDL_GPUTransferBuffer* upload_buffer
+        = SDL_CreateGPUTransferBuffer(device, &upload_buffer_info);
 
     void* mapped = SDL_MapGPUTransferBuffer(device, upload_buffer, false);
-    SDL_ConvertPixels(surface->w, surface->h, surface->format, surface->pixels, surface->pitch, SDL_PIXELFORMAT_RGBA32, mapped, surface->w * 4);
+    SDL_ConvertPixels(surface->w, surface->h, surface->format, surface->pixels,
+        surface->pitch, SDL_PIXELFORMAT_RGBA32, mapped, surface->w * 4);
     SDL_UnmapGPUTransferBuffer(device, upload_buffer);
 
     SDL_DestroySurface(surface);
@@ -66,27 +68,32 @@ SDL_GPUTexture* MeshManager::load_texture(const char* path, SDL_GPUDevice* devic
 
     SDL_SubmitGPUCommandBuffer(cmd);
 
-	SDL_UnmapGPUTransferBuffer(device, transfer_info.transfer_buffer);
-	transfer_info.transfer_buffer = nullptr;
+    SDL_UnmapGPUTransferBuffer(device, transfer_info.transfer_buffer);
+    transfer_info.transfer_buffer = nullptr;
 
     return texture;
 }
 
-bool MeshManager::load_mesh(const std::string& path, SDL_GPUDevice* device, SDL_GPUCommandBuffer* cmd, SDL_GPUSampler* default_sampler)
+bool MeshManager::load_mesh(const std::string& path, SDL_GPUDevice* device,
+    SDL_GPUCommandBuffer* cmd, SDL_GPUSampler* default_sampler)
 {
     auto mesh = std::make_unique<Mesh>();
 
-    if (!mesh->load_obj(path)) return false;
-    if (!mesh->create_vertex_buffer(device)) return false;
-    if (!mesh->create_index_buffer(device)) return false;
-    if (!mesh->create_transfer_buffer(device)) return false;
-    if (!mesh->make_mesh(device, cmd)) return false;
+    if (!mesh->load_obj(path))
+        return false;
+    if (!mesh->create_vertex_buffer(device))
+        return false;
+    if (!mesh->create_index_buffer(device))
+        return false;
+    if (!mesh->create_transfer_buffer(device))
+        return false;
+    if (!mesh->make_mesh(device, cmd))
+        return false;
 
-    for (auto& material : mesh->materials)
-    {
-        if (material.has_diffuse_map)
-        {
-            material.diffuse_texture = load_texture(material.diffuse_map_path.c_str(), device);
+    for (auto& material : mesh->materials) {
+        if (material.has_diffuse_map) {
+            material.diffuse_texture
+                = load_texture(material.diffuse_map_path.c_str(), device);
             material.diffuse_sampler = default_sampler;
         }
     }
@@ -95,30 +102,34 @@ bool MeshManager::load_mesh(const std::string& path, SDL_GPUDevice* device, SDL_
     return true;
 }
 
-void MeshManager::render_all(SDL_GPURenderPass* pass, SDL_GPUTexture* fallback_texture, SDL_GPUSampler* default_sampler)
+void MeshManager::render_all(SDL_GPURenderPass* pass,
+    SDL_GPUTexture* fallback_texture, SDL_GPUSampler* default_sampler)
 {
     uint32_t global_index_offset = 0;
 
-    for (auto& mesh : meshes)
-    {
-        mesh->render(pass, global_index_offset, fallback_texture, default_sampler);
+    for (auto& mesh : meshes) {
+        mesh->render(
+            pass, global_index_offset, fallback_texture, default_sampler);
     }
 }
 
 void MeshManager::cleanup(SDL_GPUDevice* device)
 {
-    for (auto& mesh : meshes)
-    {
-        for (auto& mat : mesh->materials)
-        {
-            if (mat.diffuse_sampler) SDL_ReleaseGPUSampler(device, mat.diffuse_sampler);
-            if (mat.diffuse_texture) SDL_ReleaseGPUTexture(device, mat.diffuse_texture);
+    for (auto& mesh : meshes) {
+        for (auto& mat : mesh->materials) {
+            if (mat.diffuse_sampler)
+                SDL_ReleaseGPUSampler(device, mat.diffuse_sampler);
+            if (mat.diffuse_texture)
+                SDL_ReleaseGPUTexture(device, mat.diffuse_texture);
             /* TODO: add all texture slots T-T */
         }
 
-        if (mesh->get_vertex_buffer()) SDL_ReleaseGPUBuffer(device, mesh->get_vertex_buffer());
-        if (mesh->get_index_buffer()) SDL_ReleaseGPUBuffer(device, mesh->get_index_buffer());
-        if (mesh->get_transfer_buffer()) SDL_ReleaseGPUTransferBuffer(device, mesh->get_transfer_buffer());
+        if (mesh->get_vertex_buffer())
+            SDL_ReleaseGPUBuffer(device, mesh->get_vertex_buffer());
+        if (mesh->get_index_buffer())
+            SDL_ReleaseGPUBuffer(device, mesh->get_index_buffer());
+        if (mesh->get_transfer_buffer())
+            SDL_ReleaseGPUTransferBuffer(device, mesh->get_transfer_buffer());
     }
 
     meshes.clear();
@@ -126,6 +137,7 @@ void MeshManager::cleanup(SDL_GPUDevice* device)
 
 Mesh* MeshManager::get_mesh(size_t index)
 {
-    if (index >= meshes.size()) return nullptr;
+    if (index >= meshes.size())
+        return nullptr;
     return meshes[index].get();
 }

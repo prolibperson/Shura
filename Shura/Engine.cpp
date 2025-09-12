@@ -13,7 +13,8 @@ bool Engine::init()
     Log("Window created");
 
     /* init renderer */
-    ENSURE(renderer_inst.init(window, &input_inst.camera_inst, &input_inst), "Renderer initialized", "Failed to init renderer");
+    ENSURE(renderer_inst.init(window, &input_inst.camera_inst, &input_inst),
+        "Renderer initialized", "Failed to init renderer");
 
     /* select window for device */
     SDL_ClaimWindowForGPUDevice(renderer_inst.get_device(), window);
@@ -31,10 +32,8 @@ bool Engine::init()
     ImGui::StyleColorsDark();
     float main_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
     ImGuiStyle& style = ImGui::GetStyle();
-    style.ScaleAllSizes(
-        main_scale);
-    style.FontScaleDpi
-        = main_scale;
+    style.ScaleAllSizes(main_scale);
+    style.FontScaleDpi = main_scale;
     ImGui_ImplSDL3_InitForSDLGPU(window);
     ImGui_ImplSDLGPU3_InitInfo init_info = {};
     init_info.Device = renderer_inst.get_device();
@@ -48,25 +47,17 @@ bool Engine::init()
         SDL_GPU_SWAPCHAINCOMPOSITION_SDR, SDL_GPU_PRESENTMODE_IMMEDIATE);
 
     /* load shaders */
-    ENSURE(shader_inst.load_shaders(
-        "shaders/spv/vertex.spv",
-        "shaders/spv/fragment.spv",
-        renderer_inst.get_device()), "Shaders loaded", "Failed to load shaders");
+    ENSURE(shader_inst.load_shaders("shaders/spv/vertex.spv",
+        "shaders/spv/fragment.spv", renderer_inst.get_device()),
+        "Shaders loaded", "Failed to load shaders");
 
     /* setup pipeline */
-    ENSURE(shader_inst.setup_pipeline(renderer_inst.get_device(), window), "Pipeline initialized", "Failed to setup graphics pipeline");
+    ENSURE(shader_inst.setup_pipeline(renderer_inst.get_device(), window),
+        "Pipeline initialized", "Failed to setup graphics pipeline");
 
-    input_inst.camera_inst.init(
-        glm::vec3(
-            0.0f, 100.0f, 0.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f),
-        0.0f,
-        0.0f,
-        80.0f,
-        (float)window_width / (float)window_height,
-        0.1f,
-        100000.0f
-    );
+    input_inst.camera_inst.init(glm::vec3(0.0f, 100.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f, 80.0f,
+        (float)window_width / (float)window_height, 0.1f, 100000.0f);
 
     return true;
 }
@@ -160,7 +151,7 @@ void Engine::shutdown()
         SDL_ReleaseGPUGraphicsPipeline(
             renderer_inst.get_device(), shader_inst.get_pipeline());
 
-	renderer_inst.cleanup();
+    renderer_inst.cleanup();
 
     SDL_DestroyWindow(window);
 }

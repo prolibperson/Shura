@@ -1,13 +1,13 @@
 #include "Renderer.h"
-#include <SDL3_image/SDL_image.h>
 #include "UniformBuffers.h"
+#include <SDL3_image/SDL_image.h>
 #include <future>
 #include <vector>
 
 bool Renderer::create_device()
 {
     device = SDL_CreateGPUDevice(
-		SDL_ShaderCross_GetSPIRVShaderFormats(), isDebug, NULL);
+        SDL_ShaderCross_GetSPIRVShaderFormats(), isDebug, NULL);
     return device != nullptr;
 }
 
@@ -20,8 +20,7 @@ bool Renderer::create_command_buffer()
 bool Renderer::init_fallback_texture()
 {
     SDL_Surface* surface = SDL_LoadBMP("Assets/common/fallback.bmp");
-    if (!surface)
-    {
+    if (!surface) {
         LogError("Failed to load fallback texture");
         return false;
     }
@@ -39,11 +38,12 @@ bool Renderer::init_fallback_texture()
     SDL_GPUTransferBufferCreateInfo upload_info{};
     upload_info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
     upload_info.size = (size_t)surface->w * surface->h * 4;
-    SDL_GPUTransferBuffer* upload_buffer = SDL_CreateGPUTransferBuffer(device, &upload_info);
+    SDL_GPUTransferBuffer* upload_buffer
+        = SDL_CreateGPUTransferBuffer(device, &upload_info);
 
     void* mapped = SDL_MapGPUTransferBuffer(device, upload_buffer, false);
-    SDL_ConvertPixels(surface->w, surface->h, surface->format, surface->pixels, surface->pitch,
-        SDL_PIXELFORMAT_RGBA32, mapped, surface->w * 4);
+    SDL_ConvertPixels(surface->w, surface->h, surface->format, surface->pixels,
+        surface->pitch, SDL_PIXELFORMAT_RGBA32, mapped, surface->w * 4);
     SDL_UnmapGPUTransferBuffer(device, upload_buffer);
 
     SDL_DestroySurface(surface);
@@ -74,13 +74,12 @@ bool Renderer::init_fallback_texture()
 
 SDL_GPUTexture* Renderer::load_texture(const char* path)
 {
-	Log("Path: {}", path);
-	SDL_Surface* surface = IMG_Load(path);
-	if (!surface)
-	{
-		LogError("Failed to load texture");
-		return nullptr;
-	}
+    Log("Path: {}", path);
+    SDL_Surface* surface = IMG_Load(path);
+    if (!surface) {
+        LogError("Failed to load texture");
+        return nullptr;
+    }
 
 #ifdef _DEBUG
     Log("Loaded surface: {}x{}", surface->w, surface->h);
@@ -95,48 +94,50 @@ SDL_GPUTexture* Renderer::load_texture(const char* path)
     texture_info.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
     SDL_GPUTexture* texture = SDL_CreateGPUTexture(device, &texture_info);
 
-	SDL_GPUTransferBufferCreateInfo upload_buffer_info = {};
-	upload_buffer_info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
-	upload_buffer_info.size = (size_t)surface->w * surface->h * 4;
-	SDL_GPUTransferBuffer* upload_buffer = SDL_CreateGPUTransferBuffer(device, &upload_buffer_info);
+    SDL_GPUTransferBufferCreateInfo upload_buffer_info = {};
+    upload_buffer_info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
+    upload_buffer_info.size = (size_t)surface->w * surface->h * 4;
+    SDL_GPUTransferBuffer* upload_buffer
+        = SDL_CreateGPUTransferBuffer(device, &upload_buffer_info);
 
-	void* mapped = SDL_MapGPUTransferBuffer(device, upload_buffer, false);
-	SDL_ConvertPixels(surface->w, surface->h, surface->format, surface->pixels, surface->pitch, SDL_PIXELFORMAT_RGBA32, mapped, surface->w * 4);
-	SDL_UnmapGPUTransferBuffer(device, upload_buffer);
+    void* mapped = SDL_MapGPUTransferBuffer(device, upload_buffer, false);
+    SDL_ConvertPixels(surface->w, surface->h, surface->format, surface->pixels,
+        surface->pitch, SDL_PIXELFORMAT_RGBA32, mapped, surface->w * 4);
+    SDL_UnmapGPUTransferBuffer(device, upload_buffer);
 
-	SDL_DestroySurface(surface);
+    SDL_DestroySurface(surface);
 
-	SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(device);
-	SDL_GPUCopyPass* copy_pass = SDL_BeginGPUCopyPass(cmd);
-	SDL_GPUTextureTransferInfo transfer_info = {};
-	transfer_info.transfer_buffer = upload_buffer;
-	transfer_info.offset = 0;
-	transfer_info.pixels_per_row = 0;
+    SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(device);
+    SDL_GPUCopyPass* copy_pass = SDL_BeginGPUCopyPass(cmd);
+    SDL_GPUTextureTransferInfo transfer_info = {};
+    transfer_info.transfer_buffer = upload_buffer;
+    transfer_info.offset = 0;
+    transfer_info.pixels_per_row = 0;
 
-	SDL_GPUTextureRegion texture_region = {};
-	texture_region.texture = texture;
-	texture_region.w = (uint32_t)texture_info.width;
-	texture_region.h = (uint32_t)texture_info.height;
-	texture_region.d = 1;
+    SDL_GPUTextureRegion texture_region = {};
+    texture_region.texture = texture;
+    texture_region.w = (uint32_t)texture_info.width;
+    texture_region.h = (uint32_t)texture_info.height;
+    texture_region.d = 1;
 
-	SDL_UploadToGPUTexture(copy_pass, &transfer_info, &texture_region, true);
-	SDL_EndGPUCopyPass(copy_pass);
-	SDL_SubmitGPUCommandBuffer(cmd);
+    SDL_UploadToGPUTexture(copy_pass, &transfer_info, &texture_region, true);
+    SDL_EndGPUCopyPass(copy_pass);
+    SDL_SubmitGPUCommandBuffer(cmd);
 
-	return texture;
+    return texture;
 }
 
 bool Renderer::create_sampler()
 {
-	SDL_GPUSamplerCreateInfo sampler_info{};
-	sampler_info.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;
-	sampler_info.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;
-	sampler_info.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;
-	sampler_info.mag_filter = SDL_GPU_FILTER_NEAREST;
-	sampler_info.min_filter = SDL_GPU_FILTER_NEAREST;
-	sampler_info.mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST;
-	default_sampler = SDL_CreateGPUSampler(device, &sampler_info);
-	return default_sampler != nullptr;
+    SDL_GPUSamplerCreateInfo sampler_info{};
+    sampler_info.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;
+    sampler_info.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;
+    sampler_info.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;
+    sampler_info.mag_filter = SDL_GPU_FILTER_NEAREST;
+    sampler_info.min_filter = SDL_GPU_FILTER_NEAREST;
+    sampler_info.mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST;
+    default_sampler = SDL_CreateGPUSampler(device, &sampler_info);
+    return default_sampler != nullptr;
 }
 
 bool Renderer::create_depth_texture()
@@ -165,19 +166,26 @@ bool Renderer::init(SDL_Window* window, Camera* camera, Input* input)
     ENSURE(create_device(), "Device created", "Failed to create device");
 
     /* make cmd buffer */
-    ENSURE(create_command_buffer(), "Command buffer created", "Failed to create command buffer");
+    ENSURE(create_command_buffer(), "Command buffer created",
+        "Failed to create command buffer");
 
-	/* make fallback texture */
-	ENSURE(init_fallback_texture(), "Fallback texture created", "Failed to create fallback texture");
+    /* make fallback texture */
+    ENSURE(init_fallback_texture(), "Fallback texture created",
+        "Failed to create fallback texture");
 
     /* load meshes */
-    ENSURE(mesh_mgr.load_mesh("Assets/sponza/sponza.obj", device, command_buffer, default_sampler), "Mesh loaded", "Failed to load mesh");
-    ENSURE(mesh_mgr.load_mesh("Assets/suzanne/Suzanne.obj", device, command_buffer, default_sampler), "Mesh loaded", "Failed to load mesh");
+    ENSURE(mesh_mgr.load_mesh("Assets/sponza/sponza.obj", device,
+        command_buffer, default_sampler),
+        "Mesh loaded", "Failed to load mesh");
+    ENSURE(mesh_mgr.load_mesh("Assets/suzanne/Suzanne.obj", device,
+        command_buffer, default_sampler),
+        "Mesh loaded", "Failed to load mesh");
 
     SDL_SubmitGPUCommandBuffer(command_buffer);
 
     /* make depth texture */
-    ENSURE(create_depth_texture(), "Depth texture created", "Failed to create depth texture");
+    ENSURE(create_depth_texture(), "Depth texture created",
+        "Failed to create depth texture");
 
     /* create sampler */
     ENSURE(create_sampler(), "Sampler created", "Failed to create sampler");
@@ -225,7 +233,8 @@ void Renderer::begin_frame()
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    /* imgui windows (TODO: move this elsewhere, maybe some imguimanager class?) */
+    /* imgui windows (TODO: move this elsewhere, maybe some imguimanager class?)
+     */
     {
         static bool show_settings = false;
 
@@ -244,7 +253,8 @@ void Renderer::begin_frame()
             ImGui::Begin("Settings", &show_settings);
             ImGui::SliderFloat(
                 "Sensitivity", &input_inst->MOUSE_SENSITIVITY, 0.0f, 1.0f);
-            ImGui::SliderFloat("Movement Speed", &input_inst->MOVE_SPEED, 0.0f, 400.0f);
+            ImGui::SliderFloat(
+                "Movement Speed", &input_inst->MOVE_SPEED, 0.0f, 400.0f);
             ImGui::End();
         }
     }
@@ -275,8 +285,10 @@ void Renderer::draw(SDL_GPUGraphicsPipeline* graphics_pipeline)
     ubo_vert.model = camera_inst->get_model();
 
     /* push!! */
-    SDL_PushGPUVertexUniformData(command_buffer, 0, &ubo_vert, sizeof(ubo_vert));
-    SDL_PushGPUFragmentUniformData(command_buffer, 0, &ubo_frag, sizeof(ubo_frag));
+    SDL_PushGPUVertexUniformData(
+        command_buffer, 0, &ubo_vert, sizeof(ubo_vert));
+    SDL_PushGPUFragmentUniformData(
+        command_buffer, 0, &ubo_frag, sizeof(ubo_frag));
 
     /* render all meshes O.o */
     mesh_mgr.render_all(render_pass, fallback_texture, default_sampler);
@@ -299,7 +311,8 @@ void Renderer::end_frame()
 
 void Renderer::cleanup()
 {
-    if (!device) return;
+    if (!device)
+        return;
 
     SDL_WaitForGPUIdle(device);
 

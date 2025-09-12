@@ -7,18 +7,20 @@ bool Shader::load_vertex(const char* filename, SDL_GPUDevice* device)
     size_t vertex_code_size;
     void* vertex_code = SDL_LoadFile(filename, &vertex_code_size);
 
-	SDL_ShaderCross_SPIRV_Info vertex_info{};
+    SDL_ShaderCross_SPIRV_Info vertex_info{};
     vertex_info.bytecode = (uint8_t*)vertex_code;
-	vertex_info.bytecode_size = vertex_code_size;
-	vertex_info.entrypoint = "main";
-	vertex_info.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_VERTEX;
+    vertex_info.bytecode_size = vertex_code_size;
+    vertex_info.entrypoint = "main";
+    vertex_info.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_VERTEX;
 
-    SDL_ShaderCross_GraphicsShaderMetadata* vertex_metadata =
-        SDL_ShaderCross_ReflectGraphicsSPIRV((uint8_t*)vertex_code, vertex_code_size, 0);
+    SDL_ShaderCross_GraphicsShaderMetadata* vertex_metadata
+        = SDL_ShaderCross_ReflectGraphicsSPIRV(
+            (uint8_t*)vertex_code, vertex_code_size, 0);
 
-    vertex_shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(device, &vertex_info, vertex_metadata, 0);
+    vertex_shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(
+        device, &vertex_info, vertex_metadata, 0);
 
-	SDL_free(vertex_metadata);
+    SDL_free(vertex_metadata);
 
     return vertex_shader != nullptr;
 }
@@ -34,10 +36,12 @@ bool Shader::load_fragment(const char* filename, SDL_GPUDevice* device)
     fragment_info.entrypoint = "main";
     fragment_info.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_FRAGMENT;
 
-    SDL_ShaderCross_GraphicsShaderMetadata* fragment_metadata =
-        SDL_ShaderCross_ReflectGraphicsSPIRV((uint8_t*)fragment_code, fragment_code_size, 0);
+    SDL_ShaderCross_GraphicsShaderMetadata* fragment_metadata
+        = SDL_ShaderCross_ReflectGraphicsSPIRV(
+            (uint8_t*)fragment_code, fragment_code_size, 0);
 
-    fragment_shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(device, &fragment_info, fragment_metadata, 0);
+    fragment_shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(
+        device, &fragment_info, fragment_metadata, 0);
 
     SDL_free(fragment_metadata);
 
@@ -63,7 +67,7 @@ bool Shader::setup_pipeline(SDL_GPUDevice* device, SDL_Window* window)
     pipeline_info.vertex_input_state.vertex_buffer_descriptions
         = vertex_buffer_descriptions;
 
-        SDL_GPUVertexAttribute vertex_attributes[4];
+    SDL_GPUVertexAttribute vertex_attributes[4];
 
     /* position */
     vertex_attributes[0].buffer_slot = 0;
@@ -95,8 +99,10 @@ bool Shader::setup_pipeline(SDL_GPUDevice* device, SDL_Window* window)
     SDL_GPUColorTargetDescription color_target_descriptions[1];
     color_target_descriptions[0] = {};
     color_target_descriptions[0].blend_state.enable_blend = true;
-    color_target_descriptions[0].blend_state.color_blend_op = SDL_GPU_BLENDOP_ADD;
-    color_target_descriptions[0].blend_state.alpha_blend_op = SDL_GPU_BLENDOP_ADD;
+    color_target_descriptions[0].blend_state.color_blend_op
+        = SDL_GPU_BLENDOP_ADD;
+    color_target_descriptions[0].blend_state.alpha_blend_op
+        = SDL_GPU_BLENDOP_ADD;
     color_target_descriptions[0].blend_state.src_color_blendfactor
         = SDL_GPU_BLENDFACTOR_SRC_ALPHA;
     color_target_descriptions[0].blend_state.dst_color_blendfactor
@@ -129,10 +135,12 @@ bool Shader::setup_pipeline(SDL_GPUDevice* device, SDL_Window* window)
     /* wireframe */
     pipeline_info.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_LINE;
 
-    graphics_pipeline_wireframe = SDL_CreateGPUGraphicsPipeline(device, &pipeline_info);
+    graphics_pipeline_wireframe
+        = SDL_CreateGPUGraphicsPipeline(device, &pipeline_info);
 
     SDL_ReleaseGPUShader(device, vertex_shader);
     SDL_ReleaseGPUShader(device, fragment_shader);
 
-    return (graphics_pipeline != nullptr) && (graphics_pipeline_wireframe != nullptr);
+    return (graphics_pipeline != nullptr)
+        && (graphics_pipeline_wireframe != nullptr);
 }
