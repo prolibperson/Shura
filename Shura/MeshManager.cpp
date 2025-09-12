@@ -14,11 +14,22 @@ SDL_GPUTexture* MeshManager::load_texture(const char* path, SDL_GPUDevice* devic
     Log("Loaded surface: {}x{}", surface->w, surface->h);
 #endif
 
+    /* calc mip levels */
+    int mip_levels = 1;
+    int width = surface->w;
+    int height = surface->h;
+    while (width > 1 || height > 1)
+    {
+        width = std::max(1, width / 2);
+        height = std::max(1, height / 2);
+        mip_levels++;
+    }
+
     SDL_GPUTextureCreateInfo texture_info{};
     texture_info.width = surface->w;
     texture_info.height = surface->h;
     texture_info.layer_count_or_depth = 1;
-    texture_info.num_levels = 1;
+    texture_info.num_levels = mip_levels;
     texture_info.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
     texture_info.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
     SDL_GPUTexture* texture = SDL_CreateGPUTexture(device, &texture_info);
@@ -36,6 +47,7 @@ SDL_GPUTexture* MeshManager::load_texture(const char* path, SDL_GPUDevice* devic
 
     SDL_GPUCommandBuffer* cmd = SDL_AcquireGPUCommandBuffer(device);
     SDL_GPUCopyPass* copy_pass = SDL_BeginGPUCopyPass(cmd);
+
     SDL_GPUTextureTransferInfo transfer_info = {};
     transfer_info.transfer_buffer = upload_buffer;
     transfer_info.offset = 0;
@@ -49,6 +61,9 @@ SDL_GPUTexture* MeshManager::load_texture(const char* path, SDL_GPUDevice* devic
 
     SDL_UploadToGPUTexture(copy_pass, &transfer_info, &texture_region, true);
     SDL_EndGPUCopyPass(copy_pass);
+
+    SDL_GenerateMipmapsForGPUTexture(cmd, texture);
+
     SDL_SubmitGPUCommandBuffer(cmd);
 
 	SDL_UnmapGPUTransferBuffer(device, transfer_info.transfer_buffer);

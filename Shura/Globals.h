@@ -1,5 +1,7 @@
 #pragma once
 
+#define NOMINMAX
+
 /* sdl */
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
@@ -13,6 +15,7 @@
 #include "Logger.h"
 
 #include <vector>
+#include <algorithm>
 
 constexpr const char* engine_name = "Shura";
 

@@ -17,10 +17,11 @@ void main()
 {
     /* sample texture */
     vec4 tex_color = texture(u_diffuse_texture, v_texCoord);
+    //vec4 tex_color = vec4(v_texCoord, 0.5, 1.0);
 
     /* alpha clip */
     if (tex_color.a < 0.5)
-        discard;
+       discard;
 
     /* normalized surface normal */
     vec3 N = normalize(v_normal);
@@ -44,5 +45,6 @@ void main()
     /* combine */
     vec3 lighting = tex_color.rgb * (ambient + diffuse) + vec3(0.2) * spec;
 
+	/* out */
     frag_color = vec4(lighting * tex_color.a, tex_color.a);
 }

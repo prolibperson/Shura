@@ -122,6 +122,7 @@ bool Shader::setup_pipeline(SDL_GPUDevice* device, SDL_Window* window)
     depth_stencil.enable_depth_write = true;
 
     pipeline_info.depth_stencil_state = depth_stencil;
+    pipeline_info.rasterizer_state.cull_mode = SDL_GPU_CULLMODE_BACK;
 
     graphics_pipeline = SDL_CreateGPUGraphicsPipeline(device, &pipeline_info);
 

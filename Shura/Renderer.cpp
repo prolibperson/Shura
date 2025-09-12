@@ -132,9 +132,9 @@ bool Renderer::create_sampler()
 	sampler_info.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;
 	sampler_info.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;
 	sampler_info.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;
-	sampler_info.mag_filter = SDL_GPU_FILTER_LINEAR;
-	sampler_info.min_filter = SDL_GPU_FILTER_LINEAR;
-	sampler_info.mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_LINEAR;
+	sampler_info.mag_filter = SDL_GPU_FILTER_NEAREST;
+	sampler_info.min_filter = SDL_GPU_FILTER_NEAREST;
+	sampler_info.mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST;
 	default_sampler = SDL_CreateGPUSampler(device, &sampler_info);
 	return default_sampler != nullptr;
 }
