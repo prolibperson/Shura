@@ -31,7 +31,7 @@ SDL_GPUTexture* MeshManager::load_texture(const char* path, SDL_GPUDevice* devic
     texture_info.layer_count_or_depth = 1;
     texture_info.num_levels = mip_levels;
     texture_info.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
-    texture_info.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
+    texture_info.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COLOR_TARGET;
     SDL_GPUTexture* texture = SDL_CreateGPUTexture(device, &texture_info);
 
     SDL_GPUTransferBufferCreateInfo upload_buffer_info = {};
