@@ -1,13 +1,13 @@
 # Shura
 
-An **SDL3 engine** built with **SDL_GPU**.
+An SDL3 engine built with SDL_GPU
 
 ---
 
 ## Features
-- OBJ mesh loading via **FastOBJ**  
-- Flycam with **WASD + Mouse** controls  
-- **ImGui** integration  
+- OBJ mesh loading via FastOBJ  
+- Flycam with WASD + Mouse controls  
+- ImGui integration  
 - Basic material and texture loading  
 
 ---
@@ -21,7 +21,7 @@ An **SDL3 engine** built with **SDL_GPU**.
 ---
 
 ## Current Goal
-Fully render the **Sponza** scene with all its beauty.
+Fully render the Sponza scene with all its beauty
 
 ---
 
