@@ -1,6 +1,6 @@
 # Shura
 
-An SDL3 engine built with SDL_GPU
+SDL_GPU engine
 
 ## Features
 - OBJ mesh loading via FastOBJ  
